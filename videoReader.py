@@ -15,7 +15,7 @@ def read_video(filename):
         ret, frame = cap.read()
         if cv2.waitKey(13) & 0xFF == ord('q'):
             break
-        
+
     cap.release()
     cv2.destroyAllWindows()
     pass
