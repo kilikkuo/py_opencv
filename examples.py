@@ -59,6 +59,12 @@ if __name__ == '__main__':
         img_path = args[2]
         face = __import__('face_detection')
         face.run(img_path)
+    elif choice in ['histogram']:
+        assert len(args) == 4, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py fahistogram PATH/TO/FEATURE PATH/TO/TEST'
+        feature_img_path = args[2]
+        test_img_path = args[3]
+        hist = __import__('histogram')
+        hist.run(feature_img_path, test_img_path)
     elif choice in ['track', 'meancamshift']:
         assert len(args) == 4, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py track PATH/TO/VIDEO mean'
         video_path = args[2]

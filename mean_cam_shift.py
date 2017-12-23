@@ -28,10 +28,11 @@ def run(path_to_video, method):
     track_window = (None, None, None, None)
     roi_hist = None
     timer = None
-    # 設定演算法中止條件, 最大迭代次數到 10 或是精確度收斂小於 1, 兩者達一即可.
-    term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1)
+    # 設定演算法中止條件, 最大迭代次數到 20 或是精確度收斂小於 1, 兩者達一即可.
+    term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 20, 1)
 
     if not use_cv2draw:
+        # 建立一個 timer, 每 16 ms 呼叫一次
         timer = fig.canvas.new_timer(interval=16)
 
     def draw_trackwindow(window=None):
@@ -65,14 +66,14 @@ def run(path_to_video, method):
             roi = frame[t:t+h, l:l+w]
             hsv_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
 
-            # 建立一個 Mask 值介於 HSV (0., 60., 32.) <=> (180., 255., 255.)
-            mask = cv2.inRange(hsv_roi, np.array((0., 60., 32.)), np.array((180., 255., 255.)))
-            roi_hist = cv2.calcHist([hsv_roi], [0], mask, [180], [0, 180])
+            # 製作 H-S 的直方圖, 並將之正規化
+            roi_hist = cv2.calcHist([hsv_roi], [0, 1], None, [180, 195], [0, 180, 60, 255])
             cv2.normalize(roi_hist, roi_hist, 0, 255, cv2.NORM_MINMAX)
 
             # 將目標追蹤方框畫在 frame 上
             draw_trackwindow()
             if not use_cv2draw:
+                # 啟動 timer
                 timer.start()
         else:
             if not use_cv2draw:
@@ -86,20 +87,21 @@ def run(path_to_video, method):
         nonlocal roi_hist
         nonlocal frame
         nonlocal term_crit
+        # 將目標 frame 轉換成 HSV, 並利用 roi_hist 來做出 backproject 圖表,
+        # 最後一個參數 scale 設成 255 可以將圖當成 8bit 表示秀出
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        dst = cv2.calcBackProject([hsv], [0], roi_hist, [0, 180], 1)
+        dst = cv2.calcBackProject([hsv], [0, 1], roi_hist, [0, 180, 60, 255], 255)
 
         if method == 'mean':
             # 套用 meanShift 演算法得到新的 track window
             ret, track_window = cv2.meanShift(dst, track_window, term_crit)
         else:
             ret, track_window = cv2.CamShift(dst, track_window, term_crit)
+            # 將 CamShift 得到的
+            pts = cv2.boxPoints(ret)
+            pts = np.int0(pts)
+            img2 = cv2.polylines(frame, [pts], True, (0, 255, 0), 2)
 
-            # # Draw it on image
-            # pts = cv2.boxPoints(ret)
-            # pts = np.int0(pts)
-            # img2 = cv2.polylines(frame,[pts],True, 255,2)
-            # cv2.imshow('img2',img2)
         # 將目標追蹤方框畫在 frame 上
         draw_trackwindow()
 
@@ -131,10 +133,14 @@ def run(path_to_video, method):
             ret = update_next_frame()
             while not all(track_window):
                 print("After selecting a region, press any key to continue !!")
-                cv2.waitKey()
+                key = cv2.waitKey() & 0xff
+                if key == 27:
+                    break
             while ret:
                 # 等待每 16 ms
-                cv2.waitKey(16)
+                key = cv2.waitKey(16) & 0xff
+                if key == 27:
+                    break
                 ret = update_next_frame()
 
     if not use_cv2draw:
