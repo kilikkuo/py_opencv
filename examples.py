@@ -59,6 +59,11 @@ if __name__ == '__main__':
         img_path = args[2]
         face = __import__('face_detection')
         face.run(img_path)
+    elif choice in ['apple']:
+        assert len(args) == 3, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py apple PATH/TO/IMAGE'
+        img_path = args[2]
+        apple = __import__('apple_detection')
+        apple.run(img_path)
     elif choice in ['histogram']:
         assert len(args) == 4, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py fahistogram PATH/TO/FEATURE PATH/TO/TEST'
         feature_img_path = args[2]

@@ -1,0 +1,10 @@
+neg_img/1.jpg
+neg_img/2.jpg
+neg_img/3.jpg
+neg_img/4.jpg
+neg_img/5.jpg
+neg_img/6.jpg
+neg_img/7.jpg
+neg_img/8.jpg
+neg_img/9.jpg
+neg_img/10.jpg

@@ -9,6 +9,7 @@ from utils import show_image
 import math
 
 def run(path_to_video, method):
+    # 使用 opencv 的繪圖方式
     use_cv2draw = True
 
     fig, ax = plt.subplots()
@@ -29,7 +30,7 @@ def run(path_to_video, method):
     roi_hist = None
     timer = None
     # 設定演算法中止條件, 最大迭代次數到 20 或是精確度收斂小於 1, 兩者達一即可.
-    term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 20, 1)
+    term_crit = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_COUNT, 100, 0.5)
 
     if not use_cv2draw:
         # 建立一個 timer, 每 16 ms 呼叫一次
@@ -42,6 +43,7 @@ def run(path_to_video, method):
 
         target_window = window if window else track_window
 
+        # 如果 target_window 有 item 是 None, 或 沒有 frame 則 return.
         if not all(target_window) or frame is None:
             return
 
