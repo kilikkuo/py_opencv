@@ -115,5 +115,5 @@ def run(image_path):
     # png => rgb
     # jpg => bgr
     img_data = cv2.imread(image_path)
-    # show_blurs(img_data)
+    show_blurs(img_data)
     thresholding(img_data)

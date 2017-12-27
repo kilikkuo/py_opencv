@@ -8,6 +8,11 @@ from matplotlib.widgets import Slider, Button, RadioButtons
 from utils import show_image
 import math
 
+frame = None
+track_window = (None, None, None, None)
+roi_hist = None
+timer = None
+
 def run(path_to_video, method):
     # 使用 opencv 的繪圖方式
     use_cv2draw = True
@@ -25,10 +30,6 @@ def run(path_to_video, method):
 
     cap = cv2.VideoCapture(path_to_video)
 
-    frame = None
-    track_window = (None, None, None, None)
-    roi_hist = None
-    timer = None
     # 設定演算法中止條件, 最大迭代次數到 20 或是精確度收斂小於 1, 兩者達一即可.
     term_crit = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_COUNT, 100, 0.5)
 
@@ -37,9 +38,9 @@ def run(path_to_video, method):
         timer = fig.canvas.new_timer(interval=16)
 
     def draw_trackwindow(window=None):
-        nonlocal frame
-        nonlocal track_window
-        nonlocal roi_hist
+        global frame
+        global track_window
+        global roi_hist
 
         target_window = window if window else track_window
 
@@ -59,9 +60,9 @@ def run(path_to_video, method):
             fig.canvas.draw()
 
     def roi_selected(val):
-        nonlocal frame
-        nonlocal track_window
-        nonlocal roi_hist
+        global frame
+        global track_window
+        global roi_hist
         if val == 'ROI Selected' and all(track_window):
             l, t, w, h = track_window
             # 將目標區域 ROI(Region Of Interest) 的圖像轉換色彩空間
@@ -85,10 +86,10 @@ def run(path_to_video, method):
     rbradio.on_clicked(roi_selected)
 
     def track_next_frame():
-        nonlocal track_window
-        nonlocal roi_hist
-        nonlocal frame
-        nonlocal term_crit
+        global track_window
+        global roi_hist
+        global frame
+        global term_crit
         # 將目標 frame 轉換成 HSV, 並利用 roi_hist 來做出 backproject 圖表,
         # 最後一個參數 scale 設成 255 可以將圖當成 8bit 表示秀出
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -108,8 +109,8 @@ def run(path_to_video, method):
         draw_trackwindow()
 
     def update_next_frame():
-        nonlocal frame
-        nonlocal track_window
+        global frame
+        global track_window
         # 讀取下一張 frame
         ret, frame = cap.read()
         if ret == True:
@@ -152,7 +153,7 @@ def run(path_to_video, method):
         btn_next.on_clicked(on_next_frame)
 
     def onCVMouseOp(event, x, y, flags, parm):
-        nonlocal track_window
+        global track_window
         if all(track_window):
             return
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -193,7 +194,7 @@ def run(path_to_video, method):
         cv2.setMouseCallback('Frame', onCVMouseOp)
 
     def onMouseOp(event):
-        nonlocal track_window
+        global track_window
         if all(track_window):
             return
         if event.name == "button_press_event":
