@@ -12,6 +12,7 @@ frame = None
 track_window = (None, None, None, None)
 roi_hist = None
 timer = None
+term_crit = None
 
 def run(path_to_video, method):
     # 使用 opencv 的繪圖方式
