@@ -79,5 +79,9 @@ if __name__ == '__main__':
     elif choice in ['edgedection', 'edge']:
         edgedection = __import__('edgedection')
         edgedection.run()
+    elif choice in ['gpu']:
+        image_path = args[2]
+        gpu = __import__('gpu')
+        gpu.run(image_path)
     else:
         print(' Example does not exist !')
