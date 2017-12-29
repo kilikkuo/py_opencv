@@ -1,43 +1,54 @@
 #coding=utf-8
 
+import os
+import sys
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
-from utils import show_image
 import time
 
-
-def plot_result(ori, edged, useGPU=False):
-    typeOfDevice = 'GPU' if useGPU else 'CPU'
-    fig, list_ax = plt.subplots(1, 2)
-    list_ax[0].set_title('{} Original Image'.format(typeOfDevice))
-    # 使用 matplotlib 畫灰階圖時必須設定 color map 才能得到正確結果
-    list_ax[1].set_title('{} Edged Image'.format(typeOfDevice))
-
-    ori_img = ori.get() if useGPU else ori
-    edge_img = edged.get() if useGPU else edged
-
-    list_ax[0].imshow(ori_img, cmap='gray')
-    list_ax[1].imshow(edge_img, cmap='gray')
+get_counter = time.time if sys.version_info[0] == 2 else time.perf_counter
 
 def cpu_version(img):
+    temp = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
     # 套用高斯模糊降噪 (opt)
-    ori_blurred = cv2.GaussianBlur(img, (5, 5), 0)
+    # temp = cv2.GaussianBlur(temp, (5, 5), 0.1)
+
     # 執行 Canny 演算法
-    edge = cv2.Canny(ori_blurred, 100, 200, L2gradient=True)
-    plot_result(ori_blurred, edge, False)
+    edge = cv2.Canny(temp, 100, 200, L2gradient=True)
+    w, h = edge.shape[1], edge.shape[0]
+
+    cv2.namedWindow("CPU", 0)
+    cv2.moveWindow("CPU", 0, 0)
+    cv2.resizeWindow("CPU", int(w/4), int(h/4))
+    cv2.imshow("CPU", edge)
 
 def gpu_version(img):
-    # 套用高斯模糊降噪 (opt)
-    ori_blurred = cv2.GaussianBlur(img, (5, 5), 0)
-    # 執行 Canny 演算法
-    edge = cv2.Canny(ori_blurred, 100, 200, L2gradient=True)
+    temp = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    plot_result(ori_blurred, edge, True)
+    # 套用高斯模糊降噪 (opt)
+    # temp = cv2.GaussianBlur(temp, (5, 5), 0.1)
+
+    # 執行 Canny 演算法
+    uedge = cv2.Canny(temp, 100, 200, L2gradient=True)
+    edge = uedge.get()
+    w, h = edge.shape[1], edge.shape[0]
+
+    cv2.namedWindow("GPU", 0)
+    cv2.moveWindow("GPU", 0, 0)
+    cv2.resizeWindow("GPU", int(w/4), int(h/4))
+    cv2.imshow("GPU", edge)
 
 def run(image_path):
-    img_mat = cv2.imread(image_path, 0)
+    # Choose device from either CPU or GPU. 不設定的話 OpenCV 不會真的啟動 opencl.
+    os.environ['OPENCV_OPENCL_DEVICE'] = ':GPU|CPU:'
+    print(' Does platform support OpenCL : {}'.format(cv2.ocl.haveOpenCL()))
+    print(' setUseOpenCL(True)')
+    print(' Can OpenCV use OpenCL : {}'.format(cv2.ocl.useOpenCL()))
+
+    img_mat = cv2.imread(image_path, 1)
     # 將 image data 轉換成 UMat 形式, upload data to memory where GPU can access
     img_umat = cv2.UMat(img_mat)
 
@@ -45,11 +56,15 @@ def run(image_path):
     # 的值在CPU power-off 或 reset 時會被重置), 屬於相對時間, 量測程式碼較準確, 因為其數值
     # 的精細度來自於執行指令數目.
     # time.time() 使用的是 dedicated hardware 時鐘, 通常是使用電池支撐的. 屬於絕對時間
-    s1 = time.perf_counter()
+    s1 = get_counter()
     cpu_version(img_mat)
-    s2 = time.perf_counter()
-    gpu_version(img_umat)
-    s3 = time.perf_counter()
+    s2 = get_counter()
     print(' cpu : {}'.format(s2-s1))
-    print(' gpu : {}'.format(s3-s2))
-    plt.show()
+
+    s3 = get_counter()
+    gpu_version(img_umat)
+    s4 = get_counter()
+    print(' gpu : {}'.format(s4-s3))
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
