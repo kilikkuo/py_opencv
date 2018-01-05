@@ -68,19 +68,19 @@ def get_keypress():
     print('Enter 1 : 執行邊緣偵測')
     print('Enter 2 : 執行邊緣偵測(加上控制項)')
     key = ''
-    if current_os == 'Linux':
-        raw_key = input()
-        key = raw_key[0] if len(raw_key) >= 1 else chr(27)
-        ord_key = ord(key)
-        # '1'
-        if ord_key == 49:
-            return True, edge_detection_only
-        # '2'
-        elif ord_key == 50:
-            return True, edge_detection_with_controls
-        # 'esc'
-        elif ord_key == 27:
-            return False, None
+
+    raw_key = input()
+    key = raw_key[0] if len(raw_key) >= 1 else chr(27)
+    ord_key = ord(key)
+    # '1'
+    if ord_key == 49:
+        return True, edge_detection_only
+    # '2'
+    elif ord_key == 50:
+        return True, edge_detection_with_controls
+    # 'esc'
+    elif ord_key == 27:
+        return False, None
 
     return False, None
 
