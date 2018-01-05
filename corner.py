@@ -144,6 +144,7 @@ def detect_good_feature_corner(ori_img):
         sql.valtext.set_text(ql)
         smd.valtext.set_text(md)
 
+        # 利用 goodFeaturesToTrack 直接尋找需要特徵數量
         corners = cv2.goodFeaturesToTrack(gray, mc, ql, md, useHarrisDetector=useHarris)
         corners = np.int0(corners)
         for i in corners:

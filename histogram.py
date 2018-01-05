@@ -18,6 +18,11 @@ def hist_draw_curve(img, normalized=False):
         assert False, "Incorrect image shape !"
 
     for channel, color in enumerate(colors):
+        # 第一個參數 : 輸入圖
+        # 第二個參數 : 欲計算 Histogram 的 channel index, 灰階圖為 0, RGB 彩圖則可能是 0, 1, 2
+        # 第三個參數 : Mask 來取出要進行統計 Histogram 的區域, 若為全圖則設 None.abs
+        # 第四個參數 : 欲將統計過後的直方圖分成幾個 bin, 簡單說就是 x 軸的單位.
+        # 第五個參數 : 出現在域統計之圖裡的值域. 0~255
         hist_item = cv2.calcHist([img], [channel], None, [256], [0, 256])
         if normalized:
             # 將得到的 historgram 值正規化在 0 ~ 255 之間
