@@ -40,6 +40,7 @@ def run(path_to_video, method):
         timer = fig.canvas.new_timer(interval=16)
 
     def draw_trackwindow(window=None):
+        # 劃出追蹤物件的視窗
         global frame
         global track_window
         global roi_hist

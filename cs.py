@@ -8,22 +8,22 @@ from utils import show_image
 # https://docs.opencv.org/3.3.0/d7/d1b/group__imgproc__misc.html#ga4e0972be5de079fed4e3a10e24ef5ef0
 
 def to_gray(image):
-    # Convert to gray
+    # 轉換成灰階影像
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return gray_image
 
 def to_hsv(image):
-    # Convert to hsv
+    # 轉換成 HSV 影像
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     return hsv_image
 
 def bgr_to_xyz_rec709_d65(image):
-    # Convert to xyz
+    # 轉換到 xyz 色彩空間
     xyz_image = cv2.cvtColor(image, cv2.COLOR_BGR2XYZ)
     return xyz_image
 
 def rec709_d65_xyz_to_bgr(image):
-    # Convert to bgr
+    # 轉換到 bgr
     bgr_image = cv2.cvtColor(image, cv2.COLOR_XYZ2BGR)
     return bgr_image
 

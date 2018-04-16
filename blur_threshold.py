@@ -14,7 +14,7 @@ def bgr_to_rgb(input_img):
     return cv2.cvtColor(input_img, cv2.COLOR_BGR2RGB)
 
 def to_blur(image, size):
-    # Blur the image
+    # 將影像高斯模糊
     blurred_image = cv2.GaussianBlur(image, (size, size), 0)
     return blurred_image
 
@@ -34,8 +34,10 @@ def show_blurs(original):
     plt.subplots_adjust(bottom=0.25)
 
     global dict_blurred
+    # 如果已經計算過 mask size 為 7 的圖, 直接使用
     blurred = dict_blurred.get(7, None)
     if not blurred:
+        # 沒有找到計算過的圖, 開始計算
         blurred = to_blur(original, 7)
     update_image(axs, original, blurred)
 
@@ -50,12 +52,13 @@ def show_blurs(original):
     sfs = Slider(axfs, 'Filter Size', 1, 19, valinit=9)
     sfs.valtext.set_text(9)
 
-
     def update_size(val):
         final_val = int(val)
+        # mask size 必須是奇數, 所以將偶數值 + 1
         if final_val % 2 == 0:
             final_val += 1
         global dict_blurred
+        # 找尋是否已經存在計算過的模糊圖像, 重複利用
         blur = dict_blurred.get(final_val, None)
         if blur is None:
             blur = to_blur(original, final_val)
@@ -103,6 +106,7 @@ def thresholding(original):
     images = [gray_ori, thresh1, thresh2, thresh3, thresh4, thresh5, thresh6, thresh7]
 
     for i in range(8):
+        # 針對 3x3 的 axes, 指定 index 作畫.
         plt.subplot(3,3,i+1)
         plt.imshow(cv2.cvtColor(images[i], cv2.COLOR_GRAY2RGB))
         plt.title(titles[i])

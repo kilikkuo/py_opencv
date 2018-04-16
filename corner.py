@@ -134,10 +134,12 @@ def detect_good_feature_corner(ori_img):
     smd = Slider(axmindistance, 'Min Distance', 1, 20, valinit=10)
 
     def update(val):
+        # 將原圖複製一份, 把結果畫在複製出來的圖上, 避免影響原圖
         res_img = ori_img.copy()
         mc = int(smc.val)
         md = int(smd.val)
         ql = sql.val
+        # 檢查是否要使用 Harris 的角落偵測法
         useHarris = False if rbradio.value_selected == 'Shi-Tomasi' else True
 
         smc.valtext.set_text(mc)
@@ -149,6 +151,7 @@ def detect_good_feature_corner(ori_img):
         corners = np.int0(corners)
         for i in corners:
             x, y = i.ravel()
+            # 在圖上面標註圓圈
             cv2.circle(res_img, (x, y), 5, 255, -1)
         ax.imshow(res_img)
         fig.canvas.draw_idle()

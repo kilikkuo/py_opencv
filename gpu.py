@@ -43,7 +43,7 @@ def gpu_version(img):
 
 def run(image_path):
     # Choose device from either CPU or GPU. 不設定的話 OpenCV 不會真的啟動 opencl.
-    os.environ['OPENCV_OPENCL_DEVICE'] = ':GPU|CPU:'
+    os.environ['OPENCV_OPENCL_DEVICE'] = ':CPU|GPU:'
     print(' Does platform support OpenCL : {}'.format(cv2.ocl.haveOpenCL()))
     print(' setUseOpenCL(True)')
     print(' Can OpenCV use OpenCL : {}'.format(cv2.ocl.useOpenCL()))

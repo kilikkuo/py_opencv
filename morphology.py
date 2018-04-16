@@ -7,6 +7,7 @@ from utils import show_image, set_plt_autolayout
 from matplotlib.widgets import Slider
 
 def do_erosion(img, kernel_size, iterations=1):
+    # 侵蝕
     # 如果 kernel_size 為 0, 直接回傳原圖
     if kernel_size == 0:
         return img
@@ -16,6 +17,7 @@ def do_erosion(img, kernel_size, iterations=1):
     return erosion
 
 def do_dilation(img, kernel_size, iterations=5):
+    # 擴張
     if kernel_size == 0:
         return img
     # 建立一個 size X size 且所有 element 為 1 的 kernel 矩陣.
@@ -24,6 +26,7 @@ def do_dilation(img, kernel_size, iterations=5):
     return dilation
 
 def do_opening(img, kernel_size):
+    # 斷開
     if kernel_size == 0:
         return img
     # opening : 是先套一個擴張(Dilation), 接著再套一個侵蝕(Erosion)
@@ -32,6 +35,7 @@ def do_opening(img, kernel_size):
     return opening
 
 def do_closing(img, kernel_size):
+    # 閉合
     if kernel_size == 0:
         return img
     # closing : 是先套一個侵蝕(Erosion), 接著再套一個擴張(Dilation)
@@ -81,10 +85,11 @@ def demo_colorblind():
     colorblind_img = cv2.imread('./colorblind.jpg')
     # 繪出原圖
     show_image(colorblind_img)
-    hsv_img = cv2.cvtColor(colorblind_img, cv2.COLOR_BGR2HSV)
     # 轉成 HSV
+    hsv_img = cv2.cvtColor(colorblind_img, cv2.COLOR_BGR2HSV)
     show_image(hsv_img)
 
+    # 將 HSV 的圖做五次擴張與侵蝕
     count = 0
     while count < 5:
         hsv_img = do_dilation(hsv_img, 3)

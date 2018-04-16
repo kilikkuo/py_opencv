@@ -8,7 +8,6 @@ def get_example_number_from_input():
     choice = input()
     return choice
 
-
 if __name__ == '__main__':
     # set_plt_autolayout(True)
 
@@ -83,5 +82,23 @@ if __name__ == '__main__':
         image_path = args[2]
         gpu = __import__('gpu')
         gpu.run(image_path)
+    elif choice in ['knn']:
+        assert len(args) == 3, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py knn points(or alphabet)'
+        ex = args[2]
+        knn = __import__('knn')
+        knn.run(ex)
+    elif choice in ['svm']:
+        assert len(args) == 4, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py svm TRAIN_RATE TEST_RATE\n' +\
+                                'TRAIN_RATE, TEST_RATE 為 0 ~ 1 的浮點數'
+        train = float(args[2])
+        test = float(args[3])
+        svm = __import__('svm')
+        svm.run(train, test)
+    elif choice in ['kmeans']:
+        assert len(args) == 4, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py kmeans IMAGE_PATH K'
+        path = args[2]
+        k = int(args[3])
+        kmeans = __import__('kmeans')
+        kmeans.run(path, k)
     else:
         print(' Example does not exist !')

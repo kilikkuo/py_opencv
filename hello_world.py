@@ -25,8 +25,8 @@ def run():
         # https://docs.opencv.org/3.3.0/d7/dfc/group__highgui.html#ga453d42fe4cb60e5723281a89973ee563
         # 設定顯示視窗的標題, 與要顯示的陣列資料 (在此為影像資料)
 
-        # 控制顯示視窗大小位置
-        # window_management(basename, w, h)
+        # 控制顯示視窗大小位置, 試著將執行下面這行程式
+        window_management(basename, w, h)
 
         cv2.imshow(basename, image)
 
