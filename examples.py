@@ -30,6 +30,12 @@ if __name__ == '__main__':
         img_path = args[2]
         cs = __import__('cs')
         cs.run(img_path)
+    elif choice in ['tonetransfer']:
+        assert len(args) == 4, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py tonetransfer SRC_IMAGE TAGET_TONE'
+        src = args[2]
+        target = args[3]
+        tt = __import__('imgtonetransfer')
+        tt.run(src, target)
     elif choice in ['blur', 'threshold', 'blur_threshold']:
         assert len(args) == 3, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py blur PATH/TO/IMAGE'
         img_path = args[2]
@@ -100,5 +106,10 @@ if __name__ == '__main__':
         k = int(args[3])
         kmeans = __import__('kmeans')
         kmeans.run(path, k)
+    elif choice in ['dnn']:
+        assert len(args) == 3, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py dnn IMAGE_PATH'
+        path = args[2]
+        from dnn import dnn_caffe_googlenet as dcg
+        dcg.run(path)
     else:
         print(' Example does not exist !')

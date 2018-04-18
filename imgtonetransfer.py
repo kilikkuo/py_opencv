@@ -1,7 +1,6 @@
 # import the necessary packages
-import sys
-import numpy as np
 import cv2
+import numpy as np
 
 def color_transfer(source, target):
 	# 將影像從 BGR 轉換到 Lab, 並且利用浮點數來增加計算精細度.
@@ -48,13 +47,21 @@ def color_transfer(source, target):
 	
 	return result
 
-if __name__ == '__main__':
-    args = sys.argv[:] 
-    source = cv2.imread(args[1])
-    target = cv2.imread(args[2])
-    cv2.imshow("Source", source)
-    cv2.imshow("Target", target)
-    cv2.waitKey(0);
-    result = color_transfer(source, target)
-    cv2.imshow("Result", result)
-    cv2.waitKey(0);
+def show_image(img, name='Unknow', downscale=True):
+	# 降低顯示圖檔的解析度(如果超過1920x1080)
+	cv2.namedWindow(name, 0)
+	cv2.moveWindow(name, 0, 0)
+	if (img.shape[0] > 1080 or img.shape[1] > 1920) and downscale:
+		cv2.resizeWindow(name, int(img.shape[1]/4), int(img.shape[0]/4))
+	cv2.imshow(name, img)
+
+def run(tar, src):
+	source = cv2.imread(src)
+	target = cv2.imread(tar)
+	show_image(source, 'Source')
+	show_image(target, 'Target')
+
+	cv2.waitKey(0);
+	result = color_transfer(source, target)
+	show_image(result, 'Result')
+	cv2.waitKey(0)
