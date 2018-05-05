@@ -14,7 +14,7 @@ def cpu_version(img):
     temp = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # 套用高斯模糊降噪 (opt)
-    # temp = cv2.GaussianBlur(temp, (5, 5), 0.1)
+    # temp = cv2.GaussianBlur(temp, (11, 11), 0.1)
 
     # 執行 Canny 演算法
     edge = cv2.Canny(temp, 100, 200, L2gradient=True)
@@ -29,7 +29,7 @@ def gpu_version(img):
     temp = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # 套用高斯模糊降噪 (opt)
-    # temp = cv2.GaussianBlur(temp, (5, 5), 0.1)
+    # temp = cv2.GaussianBlur(temp, (11, 11), 0.1)
 
     # 執行 Canny 演算法
     uedge = cv2.Canny(temp, 100, 200, L2gradient=True)
@@ -44,8 +44,10 @@ def gpu_version(img):
 def run(image_path):
     # Choose device from either CPU or GPU. 不設定的話 OpenCV 不會真的啟動 opencl.
     os.environ['OPENCV_OPENCL_DEVICE'] = ':CPU|GPU:'
+
     print(' Does platform support OpenCL : {}'.format(cv2.ocl.haveOpenCL()))
     print(' setUseOpenCL(True)')
+    cv2.ocl.setUseOpenCL(True)
     print(' Can OpenCV use OpenCL : {}'.format(cv2.ocl.useOpenCL()))
 
     img_mat = cv2.imread(image_path, 1)
