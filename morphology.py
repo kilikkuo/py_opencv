@@ -3,8 +3,16 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from utils import show_image, set_plt_autolayout
+from utils import set_plt_autolayout
 from matplotlib.widgets import Slider
+
+def show_image(img, name='Unknow', downscale=True):
+	# 降低顯示圖檔的解析度(如果超過1920x1080)
+	cv2.namedWindow(name, 0)
+	cv2.moveWindow(name, 0, 0)
+	if (img.shape[0] > 1080 or img.shape[1] > 1920) and downscale:
+		cv2.resizeWindow(name, int(img.shape[1]/4), int(img.shape[0]/4))
+	cv2.imshow(name, img)
 
 def do_erosion(img, kernel_size, iterations=1):
     # 侵蝕
@@ -84,21 +92,24 @@ def demo_four_operations():
 def demo_colorblind():
     colorblind_img = cv2.imread('./colorblind.jpg')
     # 繪出原圖
-    show_image(colorblind_img)
+    show_image(colorblind_img, 'Original')
     # 轉成 HSV
     hsv_img = cv2.cvtColor(colorblind_img, cv2.COLOR_BGR2HSV)
-    show_image(hsv_img)
+    show_image(hsv_img, 'HSV')
 
     # 將 HSV 的圖做五次擴張與侵蝕
     count = 0
-    while count < 5:
+    while count < 6:
         hsv_img = do_dilation(hsv_img, 3)
         hsv_img = do_erosion(hsv_img, 1)
-        show_image(hsv_img, millisec=400)
+        show_image(hsv_img, 'HSV')
+        cv2.waitKey(0)
         count += 1
 
     bgr_img = cv2.cvtColor(hsv_img, cv2.COLOR_HSV2BGR)
-    show_image(hsv_img)
+    show_image(bgr_img, 'BGR')
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 def run():
     demo_four_operations()
