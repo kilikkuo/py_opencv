@@ -13,7 +13,7 @@ track_window = (None, None, None, None)
 roi_hist = None
 timer = None
 term_crit = None
-
+dst = None
 def run(path_to_video, method):
     global term_crit
     # 使用 opencv 的繪圖方式
@@ -32,8 +32,8 @@ def run(path_to_video, method):
 
     cap = cv2.VideoCapture(path_to_video)
 
-    # 設定演算法中止條件, 最大迭代次數到 20 或是精確度收斂小於 1, 兩者達一即可.
-    term_crit = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_COUNT, 100, 0.5)
+    # 設定演算法中止條件, 最大迭代次數到 200 或是精確度收斂小於 0.05, 兩者達一即可.
+    term_crit = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_COUNT, 200, 0.05)
 
     if not use_cv2draw:
         # 建立一個 timer, 每 16 ms 呼叫一次
@@ -44,7 +44,7 @@ def run(path_to_video, method):
         global frame
         global track_window
         global roi_hist
-
+        global dst
         target_window = window if window else track_window
 
         # 如果 target_window 有 item 是 None, 或 沒有 frame 則 return.
@@ -56,7 +56,9 @@ def run(path_to_video, method):
         x, y, w, h = target_window
         img = cv2.rectangle(target_frame, (x, y), (x+w, y+h), 255, 3)
         if use_cv2draw:
-            cv2.imshow('Frame', img)
+            cv2.imshow('RealFrame', img)
+            if dst is not None:
+                cv2.imshow('BPFrame', dst)
         else:
             ax.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
             ax.set_title('Frame')
@@ -73,7 +75,7 @@ def run(path_to_video, method):
             hsv_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
 
             # 製作 H-S 的直方圖, 並將之正規化
-            roi_hist = cv2.calcHist([hsv_roi], [0, 1], None, [180, 195], [0, 180, 60, 255])
+            roi_hist = cv2.calcHist([hsv_roi], [0, 1], None, [180, 252-35], [0, 180, 35, 252])
             cv2.normalize(roi_hist, roi_hist, 0, 255, cv2.NORM_MINMAX)
 
             # 將目標追蹤方框畫在 frame 上
@@ -93,10 +95,11 @@ def run(path_to_video, method):
         global roi_hist
         global frame
         global term_crit
+        global dst
         # 將目標 frame 轉換成 HSV, 並利用 roi_hist 來做出 backproject 圖表,
         # 最後一個參數 scale 設成 255 可以將圖當成 8bit 表示秀出
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        dst = cv2.calcBackProject([hsv], [0, 1], roi_hist, [0, 180, 60, 255], 255)
+        dst = cv2.calcBackProject([hsv], [0, 1], roi_hist, [0, 180, 35, 252], 255)
 
         if method == 'mean':
             # 套用 meanShift 演算法得到新的 track window
@@ -175,6 +178,7 @@ def run(path_to_video, method):
             else:
                 track_window = int(track_window[0]), int(track_window[1]), track_window[2], h
             roi_selected("ROI Selected")
+            print(track_window)
         elif event == cv2.EVENT_MOUSEMOVE:
             # 選取框框, 並把框框畫在圖上
             if None not in [track_window[0], track_window[1]]:
