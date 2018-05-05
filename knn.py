@@ -39,16 +39,20 @@ def random_points_knn():
     plt.legend()
     plt.show()
 
-def ocr_alphabet_knn():
-    # Load the data, converters convert the letter to a number
+def ocr_alphabet_knn(train_rate, test_rate, k):
+    # 載入光學字體的資料, 並將第一個英文字符轉成數字
     data= np.loadtxt('letter-recognition.data', dtype= 'float32', delimiter = ',',
                      converters= {0: lambda ch: ord(ch)-ord('A')})
-
-    # 將資料切成兩部分(訓練 & 測試), 每一部分有 10000 筆資料.
-    train, test = np.vsplit(data, 2)
+    
+    # 將資料切成兩部分(訓練 & 測試), 每一部分的資料數根據輸入的參數決定.
+    total = len(data)
+    numToTrain = int(total * train_rate)
+    numToTest = int(total * test_rate)
+    train, test = data[:numToTrain], data[-numToTest:]
 
     # 將訓練資料切割成兩部分, 第一部分是資料的標記, 第二部分為資料特徵
     responses, trainData = np.hsplit(train, [1])
+
     # 將測試資料切割成兩部分, 第一部分是正確標記, 第二部分為測試特徵
     labels, testData = np.hsplit(test,[1])
 
@@ -57,18 +61,17 @@ def ocr_alphabet_knn():
     # 將訓練資料的特徵與標記交與 knn 做訓練
     knn.train(trainData, cv2.ml.ROW_SAMPLE, responses)
     # 將待測資料丟入 knn 計算每一個測試特徵屬於哪個標記.
-    ret, result, neighbours, dist = knn.findNearest(testData, k=5)
+    ret, result, neighbours, dist = knn.findNearest(testData, k=k)
 
     # 將測試結果與測試資料的正確標記做精確度分析 
     correct = np.count_nonzero(result == labels)
-    accuracy = correct / 10000.0 * 100
+    print(' Num of test : {} '.format(len(result)))
+    print(' Num of correct result: {} '.format(correct))
+    accuracy = correct / len(result) * 100
     print(' {} %'.format(accuracy))
 
-def run(example):
-    if example == 'points':
-        random_points_knn()
-        return
-    elif example == 'alphabet':
-        ocr_alphabet_knn()
-        return
-    assert False, '請指定參數 "points" or "alphabet"'
+def run_points():
+    random_points_knn()
+
+def run_alphabet(train_rate, test_rate, k):
+    ocr_alphabet_knn(train_rate, test_rate, k)

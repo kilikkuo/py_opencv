@@ -89,10 +89,18 @@ if __name__ == '__main__':
         gpu = __import__('gpu')
         gpu.run(image_path)
     elif choice in ['knn']:
-        assert len(args) == 3, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py knn points(or alphabet)'
+        assert len(args) >= 3, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py knn points(or alphabet 0.5 3)'
         ex = args[2]
         knn = __import__('knn')
-        knn.run(ex)
+        if ex == 'alphabet':
+            assert len(args) == 6, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py knn alphabet 0.5 0.5 3' +\
+                                   '0.5(Train rate) 0.5(Test rate) 3(k)'
+            train_rate = float(args[3])
+            test_rate = float(args[4])
+            k = int(args[5])
+            knn.run_alphabet(train_rate, test_rate, k)
+        else:
+            knn.run_points()
     elif choice in ['svm']:
         assert len(args) == 4, 'Error ! 請輸入正確參數格式. i.e. 執行 python examples.py svm TRAIN_RATE TEST_RATE\n' +\
                                 'TRAIN_RATE, TEST_RATE 為 0 ~ 1 的浮點數'
