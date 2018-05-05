@@ -19,7 +19,10 @@ def orb_brute_force_match():
     # 建立 Brute-Force Matcher
     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
     # 配對 desc1 與 desc2
+    # print('Desc1: {}'.format(des1))
+    # print('Desc2: {}'.format(des2))
     matches = bf.match(des1, des2)
+    # print('Matches: {}'.format(matches))
     # 將配對結果依距離做排序
     matches = sorted(matches, key=lambda x: x.distance)
     # 畫出前 10 個配對的結果
