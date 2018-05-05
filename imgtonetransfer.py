@@ -53,6 +53,8 @@ def show_image(img, name='Unknow', downscale=True):
 	cv2.moveWindow(name, 0, 0)
 	if (img.shape[0] > 1080 or img.shape[1] > 1920) and downscale:
 		cv2.resizeWindow(name, int(img.shape[1]/4), int(img.shape[0]/4))
+	else:
+		cv2.resizeWindow(name, img.shape[1], img.shape[0])
 	cv2.imshow(name, img)
 
 def run(tar, src):
